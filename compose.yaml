@@ -1,0 +1,30 @@
+name: mpi-cluster
+
+x-mpi-service: &mpi-service
+  image: ompi:5.0.3-ubuntu
+  build:
+    context: worker
+  networks:
+    - mpi-net
+  volumes:
+    - mpi-data:/shared_fs
+
+
+services:
+  master:
+    <<: *mpi-service
+    ports:
+      - "2022:22"
+  
+  worker:
+    <<: *mpi-service
+    deploy:
+      replicas: 3
+    depends_on:
+      - master
+
+networks:
+  mpi-net:
+
+volumes:
+  mpi-data:
